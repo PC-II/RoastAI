@@ -7,7 +7,6 @@ const {
   StringSelectMenuOptionBuilder, 
   ActionRowBuilder, 
   ComponentType,
-  IntegrationApplication,
 } = require('discord.js');
 const { OpenAI } = require('openai');
 const fetch = require('node-fetch');
