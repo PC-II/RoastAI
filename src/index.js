@@ -15,6 +15,8 @@ const {
   createAudioPlayer, 
   createAudioResource, 
   AudioPlayerStatus,
+  AudioPlayer,
+  VoiceConnection,
 } = require('@discordjs/voice');
 const data = require('./samples').data;
 
@@ -167,8 +169,6 @@ client.on('interactionCreate', async (interaction) => {
           adapterCreator: channel.guild.voiceAdapterCreator,
           selfDeaf: false,
         });
-
-        console.log('Successfully joined the voice channel');
     
         let player;
         if (connection.state && connection.state.subscription && connection.state.subscription.player) {
@@ -180,9 +180,10 @@ client.on('interactionCreate', async (interaction) => {
           console.log('player has been subscribed');
         }
 
+
         let resource = createAudioResource(sampleUrl);
-        console.log('Audio resource has been created');
-        player.play(resource, ()=> {console.log('sound should be playing');});
+        console.log(`Audio resource created with: ${sampleUrl}`);
+        player.play(resource);
         
     
         player.on(AudioPlayerStatus.Idle, () => {
@@ -279,28 +280,28 @@ client.on('interactionCreate', async (interaction) => {
           }
         }
     
-        const channel = interaction.member.voice.channel;
-        const connection = joinVoiceChannel({
-          channelId: channel.id,
-          guildId: channel.guild.id,
-          adapterCreator: channel.guild.voiceAdapterCreator,
-          selfDeaf: false,
-        });
+        // const channel = interaction.member.voice.channel;
+        // const connection = joinVoiceChannel({
+        //   channelId: channel.id,
+        //   guildId: channel.guild.id,
+        //   adapterCreator: channel.guild.voiceAdapterCreator,
+        //   selfDeaf: false,
+        // });
     
-        let player;
-        if (connection.state && connection.state.subscription && connection.state.subscription.player) {
-          player = connection.state.subscription.player;
-        } else {
-          player = createAudioPlayer();
-          connection.subscribe(player);
-        }
+        // let player;
+        // if (connection.state && connection.state.subscription && connection.state.subscription.player) {
+        //   player = connection.state.subscription.player;
+        // } else {
+        //   player = createAudioPlayer();
+        //   connection.subscribe(player);
+        // }
     
-        let resource = createAudioResource(audioUrl);
-        player.play(resource);
+        // let resource = createAudioResource(audioUrl);
+        // player.play(resource);
     
-        player.on(AudioPlayerStatus.Idle, () => {
-          connection.disconnect();
-        });
+        // player.on(AudioPlayerStatus.Idle, () => {
+        //   connection.disconnect();
+        // });
 
         client.user.setActivity({
           name: "Chilling ❄️❄️❄️",
