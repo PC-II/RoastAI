@@ -204,16 +204,16 @@ client.on('interactionCreate', async (interaction) => {
     }
 
     // CHAT GPT GENERATE RESPONSE
-    // await interaction.deferReply();
+    await interaction.deferReply();
     try{
-      // const completedChat = await openai.chat.completions.create({
-      //   model: "gpt-3.5-turbo",
-      //   messages: [
-      //     {"role": "system", "content": "You are a sarcastic bot with EXTREMELY inappropriate and immature jokes. You have the dialect of an articulate, but slightly ghetto person. Be sure to sprinkle in a few slang insults either relative to the prompt or make up one and use it. Also include a few exclamatories to emphasize the main roasting points when possible. THREE SENTENCES MAX."},
-      //     {"role": "user", "content": prompt},
-      //   ],
-      // });
-      // await interaction.editReply(promptPreview + completedChat.choices[0].message.content + '\n🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥');
+      const completedChat = await openai.chat.completions.create({
+        model: "gpt-3.5-turbo",
+        messages: [
+          {"role": "system", "content": "You are a sarcastic bot with EXTREMELY inappropriate and immature jokes. You have the dialect of an articulate, but slightly ghetto person. Be sure to sprinkle in a few slang insults either relative to the prompt or make up one and use it. Also include a few exclamatories to emphasize the main roasting points when possible. THREE SENTENCES MAX."},
+          {"role": "user", "content": prompt},
+        ],
+      });
+      await interaction.editReply(promptPreview + completedChat.choices[0].message.content + '\n🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥');
 
       if (!interaction.member.voice.channel) {
         const roastChannel = client.channels.cache.get(process.env.CHANNEL_ID);
@@ -236,8 +236,7 @@ client.on('interactionCreate', async (interaction) => {
           'X-USER-ID': process.env.PLAY_HT_USER_ID
         },
         body: JSON.stringify({
-          // text: completedChat.choices[0].message.content,
-          text: 'testing',
+          text: completedChat.choices[0].message.content,
           voice: 's3://mockingbird-prod/nathan_drake_carmelo_pampillonio_7d540ad6-7d32-41f6-8d53-2584901aa03d/voices/speaker/manifest.json', 
           quality: 'high',
           output_format: 'mp3',
