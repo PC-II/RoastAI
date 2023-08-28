@@ -300,21 +300,6 @@ exports.data = [
     "is_cloned": false
   },
   {
-    "id": "hipolito",
-    "name": "Audrey",
-    "sample": "https://peregrine-samples.s3.amazonaws.com/editor-samples/hipolito.wav",
-    "accent": "american",
-    "age": "adult",
-    "gender": "female",
-    "language": "English (US)",
-    "language_code": "en-US",
-    "loudness": "low",
-    "style": "narrative",
-    "tempo": "slow",
-    "texture": "round",
-    "is_cloned": false
-  },
-  {
     "id": "aurora",
     "name": "Aurora",
     "sample": "https://peregrine-samples.s3.amazonaws.com/editor-samples/Aurora.wav",
@@ -750,21 +735,6 @@ exports.data = [
     "is_cloned": false
   },
   {
-    "id": "hayden",
-    "name": "Cooper",
-    "sample": "https://peregrine-samples.s3.amazonaws.com/editor-samples/hayden.wav",
-    "accent": "american",
-    "age": "adult",
-    "gender": "male",
-    "language": "English (US)",
-    "language_code": "en-US",
-    "loudness": "neutral",
-    "style": "narrative",
-    "tempo": "neutral",
-    "texture": "round",
-    "is_cloned": false
-  },
-  {
     "id": "daisy",
     "name": "Daisy",
     "sample": "https://peregrine-samples.s3.amazonaws.com/editor-samples/Daisy.wav",
@@ -852,36 +822,6 @@ exports.data = [
     "style": "advertising",
     "tempo": "neutral",
     "texture": "thick",
-    "is_cloned": false
-  },
-  {
-    "id": "ignacio",
-    "name": "Delilah",
-    "sample": "https://peregrine-samples.s3.amazonaws.com/editor-samples/ignacio.wav",
-    "accent": "american",
-    "age": "adult",
-    "gender": "female",
-    "language": "English (US)",
-    "language_code": "en-US",
-    "loudness": "neutral",
-    "style": "narrative",
-    "tempo": "slow",
-    "texture": "smooth",
-    "is_cloned": false
-  },
-  {
-    "id": "denis",
-    "name": "Eleanor",
-    "sample": "https://peregrine-samples.s3.amazonaws.com/editor-samples/denis.wav",
-    "accent": "british",
-    "age": "adult",
-    "gender": "female",
-    "language": "English (US)",
-    "language_code": "en-US",
-    "loudness": "neutral",
-    "style": "advertising",
-    "tempo": "neutral",
-    "texture": "smooth",
     "is_cloned": false
   },
   {
@@ -1230,21 +1170,6 @@ exports.data = [
     "is_cloned": false
   },
   {
-    "id": "bill",
-    "name": "Harper",
-    "sample": "https://peregrine-samples.s3.amazonaws.com/editor-samples/bill.wav",
-    "accent": "american",
-    "age": "adult",
-    "gender": "female",
-    "language": "English (US)",
-    "language_code": "en-US",
-    "loudness": "high",
-    "style": "videos",
-    "tempo": "fast",
-    "texture": "smooth",
-    "is_cloned": false
-  },
-  {
     "id": "harris",
     "name": "Harris",
     "sample": "https://peregrine-samples.s3.amazonaws.com/editor-samples/harris.wav",
@@ -1515,21 +1440,6 @@ exports.data = [
     "is_cloned": false
   },
   {
-    "id": "ahmed",
-    "name": "Logan",
-    "sample": "https://peregrine-samples.s3.amazonaws.com/editor-samples/ahmed.wav",
-    "accent": "british",
-    "age": "old",
-    "gender": "male",
-    "language": "English (US)",
-    "language_code": "en-US",
-    "loudness": "neutral",
-    "style": "narrative",
-    "tempo": "neutral",
-    "texture": "thick",
-    "is_cloned": false
-  },
-  {
     "id": "lottie",
     "name": "Lottie",
     "sample": "https://peregrine-samples.s3.amazonaws.com/editor-samples/Lottie.wav",
@@ -1575,21 +1485,6 @@ exports.data = [
     "is_cloned": false
   },
   {
-    "id": "florencio",
-    "name": "Madison",
-    "sample": "https://peregrine-samples.s3.amazonaws.com/editor-samples/florencio.wav",
-    "accent": "british",
-    "age": "old",
-    "gender": "female",
-    "language": "English (US)",
-    "language_code": "en-US",
-    "loudness": "neutral",
-    "style": "narrative",
-    "tempo": "slow",
-    "texture": "round",
-    "is_cloned": false
-  },
-  {
     "id": "micah",
     "name": "Micah",
     "sample": "https://peregrine-samples.s3.amazonaws.com/editor-samples/micah.wav",
@@ -1602,21 +1497,6 @@ exports.data = [
     "style": "narrative",
     "tempo": "neutral",
     "texture": "smooth",
-    "is_cloned": false
-  },
-  {
-    "id": "mickey",
-    "name": "Madelyn",
-    "sample": "https://peregrine-samples.s3.amazonaws.com/editor-samples/mickey.wav",
-    "accent": "british",
-    "age": "adult",
-    "gender": "female",
-    "language": "English (US)",
-    "language_code": "en-US",
-    "loudness": "neutral",
-    "style": "videos",
-    "tempo": "fast",
-    "texture": "thick",
     "is_cloned": false
   },
   {
@@ -1875,21 +1755,6 @@ exports.data = [
     "is_cloned": false
   },
   {
-    "id": "gabriel",
-    "name": "Samantha",
-    "sample": "https://peregrine-samples.s3.amazonaws.com/editor-samples/gabriel.wav",
-    "accent": "american",
-    "age": "old",
-    "gender": "female",
-    "language": "English (US)",
-    "language_code": "en-US",
-    "loudness": "neutral",
-    "style": "narrative",
-    "tempo": "neutral",
-    "texture": "thick",
-    "is_cloned": false
-  },
-  {
     "id": "samuel",
     "name": "Samuel",
     "sample": "https://peregrine-samples.s3.amazonaws.com/editor-samples/samuel.wav",
@@ -1917,21 +1782,6 @@ exports.data = [
     "style": "gaming",
     "tempo": null,
     "texture": null,
-    "is_cloned": false
-  },
-  {
-    "id": "spencer",
-    "name": "April",
-    "sample": "https://peregrine-samples.s3.amazonaws.com/editor-samples/spencer.wav",
-    "accent": "british",
-    "age": "adult",
-    "gender": "female",
-    "language": "English (US)",
-    "language_code": "en-US",
-    "loudness": "neutral",
-    "style": "narrative",
-    "tempo": "slow",
-    "texture": "smooth",
     "is_cloned": false
   },
   {
@@ -2022,21 +1872,6 @@ exports.data = [
     "style": "narrative",
     "tempo": "neutral",
     "texture": "gravelly",
-    "is_cloned": false
-  },
-  {
-    "id": "victor",
-    "name": "Ariana",
-    "sample": "https://peregrine-samples.s3.amazonaws.com/editor-samples/victor.wav",
-    "accent": "american",
-    "age": "youth",
-    "gender": "female",
-    "language": "English (US)",
-    "language_code": "en-US",
-    "loudness": "high",
-    "style": "videos",
-    "tempo": "fast",
-    "texture": "thick",
     "is_cloned": false
   },
   {
