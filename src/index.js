@@ -132,8 +132,6 @@ client.on('interactionCreate', async (interaction) => {
         break;
     }
 
-    // console.log(sectionChosen);
-
     const selectMenu = new StringSelectMenuBuilder()
     .setCustomId(interaction.id)
     .setPlaceholder('Select a voice sample...')
@@ -180,9 +178,9 @@ client.on('interactionCreate', async (interaction) => {
         let resource = createAudioResource(sampleUrl);
         player.play(resource);
     
-        // player.on(AudioPlayerStatus.Idle, () => {
-        //   connection.disconnect();
-        // });
+        player.on(AudioPlayerStatus.Idle, () => {
+          connection.disconnect();
+        });
     });
   }
   
@@ -288,9 +286,9 @@ client.on('interactionCreate', async (interaction) => {
         let resource = createAudioResource(audioUrl);
         player.play(resource);
     
-        // player.on(AudioPlayerStatus.Idle, () => {
-        //   connection.disconnect();
-        // });
+        player.on(AudioPlayerStatus.Idle, () => {
+          connection.disconnect();
+        });
 
         client.user.setActivity({
           name: "Chilling ❄️❄️❄️",
