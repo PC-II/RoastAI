@@ -182,7 +182,6 @@ client.on('interactionCreate', async (interaction) => {
       console.log(AudioPlayerStatus.Idle);
       player.on(AudioPlayerStatus.Idle, () => {
         connection.disconnect();
-        console.log('Bot has left the channel');
       });
     });
   }
