@@ -179,16 +179,15 @@ client.on('interactionCreate', async (interaction) => {
           connection.subscribe(player);
           console.log('player has been subscribed');
         }
-    
 
         let resource = createAudioResource(sampleUrl);
         console.log('Audio resource has been created');
-        player.play(resource);
-        console.log('player has been subscribed');
+        player.play(resource, ()=> {console.log('sound should be playing');});
+        
     
         player.on(AudioPlayerStatus.Idle, () => {
           connection.disconnect();
-          console.log('player has been subscribed');
+          console.log('Bot has left the channel');
         });
     });
   }
