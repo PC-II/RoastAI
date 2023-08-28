@@ -167,20 +167,28 @@ client.on('interactionCreate', async (interaction) => {
           adapterCreator: channel.guild.voiceAdapterCreator,
           selfDeaf: false,
         });
+
+        console.log('Successfully joined the voice channel');
     
         let player;
         if (connection.state && connection.state.subscription && connection.state.subscription.player) {
           player = connection.state.subscription.player;
         } else {
           player = createAudioPlayer();
+          console.log('Audio player has been created');
           connection.subscribe(player);
+          console.log('player has been subscribed');
         }
     
+
         let resource = createAudioResource(sampleUrl);
+        console.log('Audio resource has been created');
         player.play(resource);
+        console.log('player has been subscribed');
     
         player.on(AudioPlayerStatus.Idle, () => {
           connection.disconnect();
+          console.log('player has been subscribed');
         });
     });
   }
