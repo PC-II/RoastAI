@@ -18,6 +18,7 @@ const {
 } = require('@discordjs/voice');
 const data = require('./samples').data;
 
+
 const client = new Client({
   intents: [
     IntentsBitField.Flags.Guilds,
@@ -194,6 +195,7 @@ client.on('interactionCreate', async (interaction) => {
     const topic = interaction.options.get('topic').value;
     const specific = interaction.options.get('specifically')?.value;
 
+    // CHAT GPT PROMPT
     let prompt = `Roast my friend ${name} about how terrible they are with/in ${topic} and make it FUNNY without holding back in a couple sentences. `;
     let promptPreview = `Prompt { Name: ${name} | Topic: ${topic} }\n\n`;
     if(specific){
@@ -201,16 +203,17 @@ client.on('interactionCreate', async (interaction) => {
       promptPreview = `Prompt { Name: ${name} | Topic: ${topic} | Specifically: ${specific} }\n\n`
     }
 
-    await interaction.deferReply();
+    // CHAT GPT GENERATE RESPONSE
+    // await interaction.deferReply();
     try{
-      const completedChat = await openai.chat.completions.create({
-        model: "gpt-3.5-turbo",
-        messages: [
-          {"role": "system", "content": "You are a sarcastic bot with EXTREMELY inappropriate and immature jokes. You have the dialect of an articulate, but slightly ghetto person. Be sure to sprinkle in a few slang insults either relative to the prompt or make up one and use it. Also include a few exclamatories to emphasize the main roasting points when possible. THREE SENTENCES MAX."},
-          {"role": "user", "content": prompt},
-        ],
-      });
-      await interaction.editReply(promptPreview + completedChat.choices[0].message.content + '\n🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥');
+      // const completedChat = await openai.chat.completions.create({
+      //   model: "gpt-3.5-turbo",
+      //   messages: [
+      //     {"role": "system", "content": "You are a sarcastic bot with EXTREMELY inappropriate and immature jokes. You have the dialect of an articulate, but slightly ghetto person. Be sure to sprinkle in a few slang insults either relative to the prompt or make up one and use it. Also include a few exclamatories to emphasize the main roasting points when possible. THREE SENTENCES MAX."},
+      //     {"role": "user", "content": prompt},
+      //   ],
+      // });
+      // await interaction.editReply(promptPreview + completedChat.choices[0].message.content + '\n🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥');
 
       if (!interaction.member.voice.channel) {
         const roastChannel = client.channels.cache.get(process.env.CHANNEL_ID);
@@ -222,6 +225,7 @@ client.on('interactionCreate', async (interaction) => {
         return;
       }
 
+      // GENERATING AI VOICE LINES      
       const url1 = 'https://play.ht/api/v2/tts';
       const options1 = {
         method: 'POST',
@@ -232,13 +236,14 @@ client.on('interactionCreate', async (interaction) => {
           'X-USER-ID': process.env.PLAY_HT_USER_ID
         },
         body: JSON.stringify({
-          text: completedChat.choices[0].message.content,
+          // text: completedChat.choices[0].message.content,
+          text: 'testing',
           voice: 's3://mockingbird-prod/nathan_drake_carmelo_pampillonio_7d540ad6-7d32-41f6-8d53-2584901aa03d/voices/speaker/manifest.json', 
           quality: 'high',
           output_format: 'mp3',
-          speed: 1.2,
+          speed: 1.0,
           sample_rate: 24000,
-          temperature: 1
+          temperature: 0.7
         })
       };
 
@@ -246,6 +251,7 @@ client.on('interactionCreate', async (interaction) => {
       let resJson1 = await res1.json();
       let id = resJson1.id;
 
+      // RETRIEVE AI GENERATED VOICE LINES
       if(resJson1.created !== undefined){
         const url2 = `https://play.ht/api/v2/tts/${id}`;
         const options2 = {
