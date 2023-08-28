@@ -15,8 +15,6 @@ const {
   createAudioPlayer, 
   createAudioResource, 
   AudioPlayerStatus,
-  AudioPlayer,
-  VoiceConnection,
 } = require('@discordjs/voice');
 const data = require('./samples').data;
 
@@ -163,35 +161,29 @@ client.on('interactionCreate', async (interaction) => {
       interaction.reply({ content: 'The sample will play momentarily...', ephemeral: true });
       const sampleUrl = interaction.values[0];
       const channel = interaction.member.voice.channel;
-        const connection = joinVoiceChannel({
-          channelId: channel.id,
-          guildId: channel.guild.id,
-          adapterCreator: channel.guild.voiceAdapterCreator,
-          selfDeaf: false,
-        });
-    
-        // if (connection.state && connection.state.subscription && connection.state.subscription.player) {
-        //   player = connection.state.subscription.player;
-        // } else {
-        //   var player = createAudioPlayer();
-        //   console.log('Audio player has been created');
-        //   connection.subscribe(player);
-        //   console.log('player has been subscribed');
-        // }
-
-        var player = createAudioPlayer();
-        console.log('Audio player has been created');
+      const connection = joinVoiceChannel({
+        channelId: channel.id,
+        guildId: channel.guild.id,
+        adapterCreator: channel.guild.voiceAdapterCreator,
+        selfDeaf: false,
+      });
+  
+      let player;
+      if (connection.state && connection.state.subscription && connection.state.subscription.player) {
+        player = connection.state.subscription.player;
+      } else {
+        player = createAudioPlayer();
         connection.subscribe(player);
-        console.log('player has been subscribed');
+      }
 
-        let resource = createAudioResource(sampleUrl);
-        player.play(resource);
-        
-        // console.log(AudioPlayerStatus.Idle);
-        // player.on(AudioPlayerStatus.Idle, () => {
-        //   connection.disconnect();
-        //   console.log('Bot has left the channel');
-        // });
+      let resource = createAudioResource(sampleUrl);
+      player.play(resource);
+      
+      console.log(AudioPlayerStatus.Idle);
+      player.on(AudioPlayerStatus.Idle, () => {
+        connection.disconnect();
+        console.log('Bot has left the channel');
+      });
     });
   }
   
@@ -252,7 +244,6 @@ client.on('interactionCreate', async (interaction) => {
           output_format: 'mp3',
           speed: 1.0,
           sample_rate: 24000,
-          temperature: 0.7
         })
       };
 
@@ -282,28 +273,28 @@ client.on('interactionCreate', async (interaction) => {
           }
         }
     
-        // const channel = interaction.member.voice.channel;
-        // const connection = joinVoiceChannel({
-        //   channelId: channel.id,
-        //   guildId: channel.guild.id,
-        //   adapterCreator: channel.guild.voiceAdapterCreator,
-        //   selfDeaf: false,
-        // });
+        const channel = interaction.member.voice.channel;
+        const connection = joinVoiceChannel({
+          channelId: channel.id,
+          guildId: channel.guild.id,
+          adapterCreator: channel.guild.voiceAdapterCreator,
+          selfDeaf: false,
+        });
     
-        // let player;
-        // if (connection.state && connection.state.subscription && connection.state.subscription.player) {
-        //   player = connection.state.subscription.player;
-        // } else {
-        //   player = createAudioPlayer();
-        //   connection.subscribe(player);
-        // }
+        let player;
+        if (connection.state && connection.state.subscription && connection.state.subscription.player) {
+          player = connection.state.subscription.player;
+        } else {
+          player = createAudioPlayer();
+          connection.subscribe(player);
+        }
     
-        // let resource = createAudioResource(audioUrl);
-        // player.play(resource);
+        let resource = createAudioResource(audioUrl);
+        player.play(resource);
     
-        // player.on(AudioPlayerStatus.Idle, () => {
-        //   connection.disconnect();
-        // });
+        player.on(AudioPlayerStatus.Idle, () => {
+          connection.disconnect();
+        });
 
         client.user.setActivity({
           name: "Chilling ❄️❄️❄️",
