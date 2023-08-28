@@ -170,22 +170,21 @@ client.on('interactionCreate', async (interaction) => {
           selfDeaf: false,
         });
     
-        let player;
-        if (connection.state && connection.state.subscription && connection.state.subscription.player) {
-          player = connection.state.subscription.player;
-        } else {
-          player = createAudioPlayer();
-          console.log('Audio player has been created');
-          connection.subscribe(player);
-          console.log('player has been subscribed');
-        }
+        // if (connection.state && connection.state.subscription && connection.state.subscription.player) {
+        //   player = connection.state.subscription.player;
+        // } else {
+        //   var player = createAudioPlayer();
+        //   console.log('Audio player has been created');
+        //   connection.subscribe(player);
+        //   console.log('player has been subscribed');
+        // }
 
+        var player = createAudioPlayer();
+        console.log('Audio player has been created');
+        connection.subscribe(player);
+        console.log('player has been subscribed');
 
         let resource = createAudioResource(sampleUrl);
-
-        console.log(`Audio resource created with: ${sampleUrl}`);
-        console.log(resource);
-
         player.play(resource);
         
         // console.log(AudioPlayerStatus.Idle);
