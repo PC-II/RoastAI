@@ -182,14 +182,17 @@ client.on('interactionCreate', async (interaction) => {
 
 
         let resource = createAudioResource(sampleUrl);
+
         console.log(`Audio resource created with: ${sampleUrl}`);
+        console.log(resource);
+
         player.play(resource);
         
-        console.log(AudioPlayerStatus.Idle);
-        player.on(AudioPlayerStatus.Idle, () => {
-          connection.disconnect();
-          console.log('Bot has left the channel');
-        });
+        // console.log(AudioPlayerStatus.Idle);
+        // player.on(AudioPlayerStatus.Idle, () => {
+        //   connection.disconnect();
+        //   console.log('Bot has left the channel');
+        // });
     });
   }
   
