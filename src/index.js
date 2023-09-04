@@ -43,10 +43,10 @@ client.on('interactionCreate', async (interaction) => {
     const specific = interaction.options.get('specifically')?.value;
 
     // CHAT GPT PROMPT
-    let prompt = `Roast my friend ${name} about how terrible they are with/in ${topic} and make it FUNNY without holding back in a paragraph or two. MAKE A RESPONSE WITH 2000 WORDS MAX. DO NOT USE MORE THAN 2000 WORDS TO RESPOND.`;
+    let prompt = `Roast my friend ${name} about how terrible they are with/in ${topic} and make it FUNNY without holding back in a paragraph or two. USE 1800 CHARACTERS OR LESS FOR THE RESPONSE.`;
     let promptPreview = `Prompt { Name: ${name} | Topic: ${topic} }\n\n`;
     if(specific){
-      prompt += `Make sure to mention and emphasize ${specific} since it makes them much worse.`;
+      prompt += `Make sure to mention and emphasize ${specific} thoughout the response.`;
       promptPreview = `Prompt { Name: ${name} | Topic: ${topic} | Specifically: ${specific} }\n\n`
     }
     console.log(`${promptPreview}`);
@@ -57,7 +57,7 @@ client.on('interactionCreate', async (interaction) => {
       const completedChat = await openai.chat.completions.create({
         model: "gpt-3.5-turbo",
         messages: [
-          {"role": "system", "content": "You are a sarcastic bot with EXTREMELY inappropriate and immature jokes. You have the dialect of an articulate, but slightly ghetto person. Be sure to sprinkle in a few slang insults either relative to the prompt or make up one and use it. Also include a few exclamatories to emphasize the main roasting points when possible."},
+          {"role": "system", "content": "You are a sarcastic bot with EXTREMELY inappropriate and immature jokes. You have the dialect of an articulate, but slightly ghetto person. Be sure to sprinkle in a few slang insults relative to the prompt or make up one and use it. Also include a few exclamatories to emphasize the main roasting points when possible."},
           {"role": "user", "content": prompt},
         ],
       });
