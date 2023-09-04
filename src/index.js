@@ -5,6 +5,13 @@ const {
   ActivityType,
 } = require('discord.js');
 const { OpenAI } = require('openai');
+const sdk = require('api')('@genny-api/v1.0#keed2wlloy9a03');
+const {
+  joinVoiceChannel,
+  createAudioPlayer,
+  createAudioResource,
+  AudioPlayerStatus,
+} = require('@discordjs/voice');
 
 const client = new Client({
   intents: [
@@ -43,7 +50,7 @@ client.on('interactionCreate', async (interaction) => {
     const specific = interaction.options.get('specifically')?.value;
 
     // CHAT GPT PROMPT
-    let prompt = `Roast my friend ${name} about how terrible they are with/in ${topic} and make it FUNNY without holding back in a paragraph or two. USE 1800 CHARACTERS OR LESS FOR THE RESPONSE.`;
+    let prompt = `Roast my friend ${name} about how terrible they are with/in ${topic} and make it FUNNY without holding back.`;
     let promptPreview = `Prompt { Name: ${name} | Topic: ${topic} }\n\n`;
     if(specific){
       prompt += `Make sure to mention and emphasize ${specific} thoughout the response.`;
@@ -57,12 +64,78 @@ client.on('interactionCreate', async (interaction) => {
       const completedChat = await openai.chat.completions.create({
         model: "gpt-3.5-turbo",
         messages: [
-          {"role": "system", "content": "You are a sarcastic bot with EXTREMELY inappropriate and immature jokes. You have the dialect of an articulate, but slightly ghetto person. Be sure to sprinkle in a few slang insults relative to the prompt or make up one and use it. Also include a few exclamatories to emphasize the main roasting points when possible."},
+          {"role": "system", "content": "You are a sarcastic bot with EXTREMELY inappropriate and immature jokes. You have the dialect of an articulate, but slightly ghetto person. Be sure to sprinkle in a few slang insults relative to the prompt or make up one and use it. Also include a few exclamatories to emphasize the main roasting points when possible. THE REPLY MUST BE TWO OR THREE SENTENCES MAX."},
           {"role": "user", "content": prompt},
         ],
       });
-      await interaction.editReply(promptPreview + completedChat.choices[0].message.content + '\n🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥');
       console.log(completedChat.choices[0].message.content);   
+      
+      // AI Generated Voice
+      
+      const voiceChannel = interaction.member.voice.channel;
+      let joinChannelMsg = '';
+      if(!voiceChannel){
+        joinChannelMsg = '\n\n(Join a channel next time and the bot will read your message!)';
+        console.log('\nmember was not in a channel');
+      }
+
+      await interaction.editReply(promptPreview + completedChat.choices[0].message.content + '\n🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥' + joinChannelMsg);
+
+      if(!voiceChannel) return;
+      
+      console.log('\nRequesting AI Voice...');
+      sdk.auth(process.env.LOVO_KEY);
+      sdk.asyncTts({
+        speed: 1.75,
+        text: completedChat.choices[0].message.content,
+        speaker: '640f47812babeb0024be4252'
+      })
+        .then(({ data }) => {
+          let counter = 0;
+          const interval = setInterval(() => {
+            console.log(`${++counter} seconds`);
+            sdk.asyncRetrieveJob({jobId: data.id})
+            .then(({ data }) => {
+              if(data.status === 'done'){
+                console.log(data.status);
+                const audioUrl = data.data[0].urls[0];
+
+                // Join voice chat
+                const connection = joinVoiceChannel({
+                  channelId: voiceChannel.id,
+                  guildId: voiceChannel.guild.id,
+                  adapterCreator: voiceChannel.guild.voiceAdapterCreator,
+                  selfDeaf: false,
+                });
+                console.log('joined voice channel');
+
+                let player;
+                if (connection.state && connection.state.subscription && connection.state.subscription.player) {
+                  player = connection.state.subscription.player;
+                } else {
+                  player = createAudioPlayer();
+                  connection.subscribe(player);
+                }
+            
+                let resource = createAudioResource(audioUrl);
+                player.play(resource);
+            
+                player.on(AudioPlayerStatus.Idle, () => {
+                  connection.disconnect();
+                  console.log('left voice channel');
+                });
+
+                clearInterval(interval);
+              }
+              else if(counter === 120){
+                console.log('AI Voice Request Timeout');
+                clearInterval(interval);
+              }
+            })
+            .catch(err => console.error(err));
+          }, 1000);
+        })
+        .catch(err => console.error(err));
 
       client.user.setActivity({
         name: "Chilling ❄️❄️❄️",
