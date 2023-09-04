@@ -3,21 +3,8 @@ const {
   Client, 
   IntentsBitField, 
   ActivityType,
-  StringSelectMenuBuilder, 
-  StringSelectMenuOptionBuilder, 
-  ActionRowBuilder, 
-  ComponentType,
 } = require('discord.js');
 const { OpenAI } = require('openai');
-const fetch = require('node-fetch');
-const { 
-  joinVoiceChannel, 
-  createAudioPlayer, 
-  createAudioResource, 
-  AudioPlayerStatus,
-} = require('@discordjs/voice');
-const data = require('./samples').data;
-
 
 const client = new Client({
   intents: [
@@ -45,6 +32,7 @@ client.on('interactionCreate', async (interaction) => {
   }
   
   if(interaction.commandName === 'roast'){
+    console.log(`Request from: ${interaction.member.displayName}`);
     client.user.setActivity({
       name: "Cooking 🔥🔥🔥",
       type: ActivityType.Custom,
@@ -55,12 +43,13 @@ client.on('interactionCreate', async (interaction) => {
     const specific = interaction.options.get('specifically')?.value;
 
     // CHAT GPT PROMPT
-    let prompt = `Roast my friend ${name} about how terrible they are with/in ${topic} and make it FUNNY without holding back in a paragraph. `;
+    let prompt = `Roast my friend ${name} about how terrible they are with/in ${topic} and make it FUNNY without holding back in a paragraph or two. `;
     let promptPreview = `Prompt { Name: ${name} | Topic: ${topic} }\n\n`;
     if(specific){
       prompt += `Make sure to mention and emphasize ${specific} since it makes them much worse.`;
       promptPreview = `Prompt { Name: ${name} | Topic: ${topic} | Specifically: ${specific} }\n\n`
     }
+    console.log(`${promptPreview}`);
 
     // CHAT GPT GENERATE RESPONSE
     await interaction.deferReply();
@@ -73,6 +62,7 @@ client.on('interactionCreate', async (interaction) => {
         ],
       });
       await interaction.editReply(promptPreview + completedChat.choices[0].message.content + '\n🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥');
+      console.log(completedChat.choices[0].message.content);   
 
       client.user.setActivity({
         name: "Chilling ❄️❄️❄️",
