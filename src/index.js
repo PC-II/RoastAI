@@ -54,7 +54,7 @@ client.on('interactionCreate', async (interaction) => {
     const voiceChannel = interaction.member.voice.channel;
     const player = createAudioPlayer();
     const resource = createAudioResource("https://cdn.lovo.ai/speaker-tts-samples/prod/mike-default.wav", {
-      inputType: StreamType.Arbitrary,
+      inputType: StreamType.Opus,
     });
     console.log(resource);
 
@@ -67,9 +67,7 @@ client.on('interactionCreate', async (interaction) => {
       selfDeaf: false,
     });
 
-    setTimeout(() => {
-      connection.subscribe(player);
-    }, 3000);
+    connection.subscribe(player);
 
     await interaction.reply({content: 'done!', ephemeral: true});
 
