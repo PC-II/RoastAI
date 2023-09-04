@@ -43,7 +43,7 @@ client.on('interactionCreate', async (interaction) => {
     const specific = interaction.options.get('specifically')?.value;
 
     // CHAT GPT PROMPT
-    let prompt = `Roast my friend ${name} about how terrible they are with/in ${topic} and make it FUNNY without holding back in a paragraph or two. `;
+    let prompt = `Roast my friend ${name} about how terrible they are with/in ${topic} and make it FUNNY without holding back in a paragraph or two. MAKE A RESPONSE WITH 2000 WORDS MAX. DO NOT USE MORE THAN 2000 WORDS TO RESPOND.`;
     let promptPreview = `Prompt { Name: ${name} | Topic: ${topic} }\n\n`;
     if(specific){
       prompt += `Make sure to mention and emphasize ${specific} since it makes them much worse.`;
