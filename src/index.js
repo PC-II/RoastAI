@@ -52,18 +52,23 @@ client.on('interactionCreate', async (interaction) => {
 
     // CHAT GPT PROMPT
     let prompt = `Roast my friend ${name} about how terrible they are with/in ${topic} and make it FUNNY without holding back.`;
-    let promptPreview = `Prompt { Name: ${name} | Topic: ${topic} } ${mention} \n\n`;
+    let promptPreview = `Prompt { Name: ${name} | Topic: ${topic} `;
     if(specific){
       prompt += `Make sure to mention and emphasize ${specific} thoughout the response.`;
-      promptPreview = `Prompt { Name: ${name} | Topic: ${topic} | Specifically: ${specific} } ${mention} \n\n`
+      promptPreview += `| Specifically: ${specific} `;
+    }
+    if(mention){
+      promptPreview += `} ${mention}\n\n`;
+    } else {
+      promptPreview += `}\n\n`;
     }
 
     const voiceChannel = interaction.member.voice.channel;
     let joinChannelMsg = '';
-    let prompLength = 'THE REPLY MUST BE TWO OR THREE SENTENCES MAX USING LESS THAN 500 CHARACTERS.';
+    let promptLength = 'THE REPLY MUST BE TWO OR THREE SENTENCES MAX USING LESS THAN 500 CHARACTERS.';
     if(!voiceChannel){
       joinChannelMsg = '\n\n(Join a channel next time and the bot will read your message!)';
-      prompLength = 'THE REPLY MUST BE TWO PRAGRAPHS MAX USING LESS THAN 1800 CHARACTERS';
+      promptLength = 'THE REPLY MUST BE TWO OR THREE PRAGRAPHS MAX USING LESS THAN 1800 CHARACTERS';
       console.log('\nmember was not in a channel');
     }
 
@@ -73,7 +78,7 @@ client.on('interactionCreate', async (interaction) => {
       const completedChat = await openai.chat.completions.create({
         model: "gpt-3.5-turbo",
         messages: [
-          {"role": "system", "content": `You are a sarcastic bot with EXTREMELY inappropriate and immature jokes. You have the dialect of an articulate, but slightly ghetto person. Be sure to sprinkle in a few slang insults relative to the prompt or make up one and use it. Also include a few exclamatories to emphasize the main roasting points when possible. ${prompLength}`},
+          {"role": "system", "content": `You are a sarcastic bot with EXTREMELY inappropriate and immature jokes. You have the dialect of an articulate, but slightly ghetto person. Be sure to sprinkle in a few slang insults relative to the prompt or make up one and use it. Also include a few exclamatories to emphasize the main roasting points when possible. ${promptLength}`},
           {"role": "user", "content": prompt},
         ],
       });
