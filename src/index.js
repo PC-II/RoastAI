@@ -48,15 +48,24 @@ client.on('interactionCreate', async (interaction) => {
     const name = interaction.options.get('name').value;
     const topic = interaction.options.get('topic').value;
     const specific = interaction.options.get('specifically')?.value;
+    const mention = interaction.options.get('mention')?.member;
 
     // CHAT GPT PROMPT
     let prompt = `Roast my friend ${name} about how terrible they are with/in ${topic} and make it FUNNY without holding back.`;
-    let promptPreview = `Prompt { Name: ${name} | Topic: ${topic} }\n\n`;
+    let promptPreview = `Prompt { Name: ${name} | Topic: ${topic} } ${mention} \n\n`;
     if(specific){
       prompt += `Make sure to mention and emphasize ${specific} thoughout the response.`;
-      promptPreview = `Prompt { Name: ${name} | Topic: ${topic} | Specifically: ${specific} }\n\n`
+      promptPreview = `Prompt { Name: ${name} | Topic: ${topic} | Specifically: ${specific} } ${mention} \n\n`
     }
-    console.log(`${promptPreview}`);
+
+    const voiceChannel = interaction.member.voice.channel;
+    let joinChannelMsg = '';
+    let prompLength = 'THE REPLY MUST BE TWO OR THREE SENTENCES MAX USING LESS THAN 500 CHARACTERS.';
+    if(!voiceChannel){
+      joinChannelMsg = '\n\n(Join a channel next time and the bot will read your message!)';
+      prompLength = 'THE REPLY MUST BE TWO PRAGRAPHS MAX USING LESS THAN 1800 CHARACTERS';
+      console.log('\nmember was not in a channel');
+    }
 
     // CHAT GPT GENERATE RESPONSE
     await interaction.deferReply();
@@ -64,29 +73,21 @@ client.on('interactionCreate', async (interaction) => {
       const completedChat = await openai.chat.completions.create({
         model: "gpt-3.5-turbo",
         messages: [
-          {"role": "system", "content": "You are a sarcastic bot with EXTREMELY inappropriate and immature jokes. You have the dialect of an articulate, but slightly ghetto person. Be sure to sprinkle in a few slang insults relative to the prompt or make up one and use it. Also include a few exclamatories to emphasize the main roasting points when possible. THE REPLY MUST BE TWO OR THREE SENTENCES MAX."},
+          {"role": "system", "content": `You are a sarcastic bot with EXTREMELY inappropriate and immature jokes. You have the dialect of an articulate, but slightly ghetto person. Be sure to sprinkle in a few slang insults relative to the prompt or make up one and use it. Also include a few exclamatories to emphasize the main roasting points when possible. ${prompLength}`},
           {"role": "user", "content": prompt},
         ],
       });
-      console.log(completedChat.choices[0].message.content);   
-      
-      // AI Generated Voice
-      
-      const voiceChannel = interaction.member.voice.channel;
-      let joinChannelMsg = '';
-      if(!voiceChannel){
-        joinChannelMsg = '\n\n(Join a channel next time and the bot will read your message!)';
-        console.log('\nmember was not in a channel');
-      }
+      console.log(promptPreview + completedChat.choices[0].message.content); 
 
       await interaction.editReply(promptPreview + completedChat.choices[0].message.content + '\n🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥' + joinChannelMsg);
 
+      // AI Generated Voice
       if(!voiceChannel) return;
       
       console.log('\nRequesting AI Voice...');
       sdk.auth(process.env.LOVO_KEY);
       sdk.asyncTts({
-        speed: 1.75,
+        speed: 1.5,
         text: completedChat.choices[0].message.content,
         speaker: '640f47812babeb0024be4252'
       })
@@ -129,6 +130,10 @@ client.on('interactionCreate', async (interaction) => {
               }
               else if(counter === 120){
                 console.log('AI Voice Request Timeout');
+                client.user.setActivity({
+                  name: "Chilling ❄️❄️❄️",
+                  type: ActivityType.Custom,
+                });
                 clearInterval(interval);
               }
             })
