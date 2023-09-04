@@ -12,7 +12,6 @@ const {
   createAudioResource,
   AudioPlayerStatus,
   StreamType,
-  VoiceConnectionStatus,
 } = require('@discordjs/voice');
 
 const client = new Client({
@@ -57,6 +56,7 @@ client.on('interactionCreate', async (interaction) => {
     const resource = createAudioResource("https://cdn.lovo.ai/speaker-tts-samples/prod/mike-default.wav", {
       inputType: StreamType.Arbitrary,
     });
+    console.log(resource);
 
     player.play(resource);
 
@@ -67,8 +67,16 @@ client.on('interactionCreate', async (interaction) => {
       selfDeaf: false,
     });
 
-    connection.subscribe(player);
+    setTimeout(() => {
+      connection.subscribe(player);
+    }, 3000);
+
     await interaction.reply({content: 'done!', ephemeral: true});
+
+    player.on(AudioPlayerStatus.Idle, () => {
+      connection.disconnect();
+      console.log('left voice channel');
+    });
 
 
 
