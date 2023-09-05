@@ -1,6 +1,6 @@
 {
   "name": "roastai",
-  "version": "1.0.0",
+  "version": "2.0.1",
   "description": "",
   "main": "src/index.js",
   "scripts": {
@@ -11,12 +11,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@discordjs/voice": "^0.16.0",
-    "api": "^6.1.1",
     "discord.js": "^14.13.0",
     "dotenv": "^16.3.1",
-    "ffmpeg-static": "^5.2.0",
-    "libsodium-wrappers": "^0.7.11",
     "openai": "^4.2.0"
   },
   "devDependencies": {
