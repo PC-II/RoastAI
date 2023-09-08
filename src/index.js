@@ -5,6 +5,7 @@ const {
   ActivityType,
 } = require('discord.js');
 const { OpenAI } = require('openai');
+const fetch = require('node-fetch');
 
 const client = new Client({
   intents: [
@@ -32,7 +33,7 @@ client.on('interactionCreate', async (interaction) => {
   }
   
   if(interaction.commandName === 'roast'){
-    console.log(`Request from: ${interaction.member.displayName}`);
+    console.log(`Roast request from: ${interaction.member.displayName}`);
     client.user.setActivity({
       name: "Cooking 🔥🔥🔥",
       type: ActivityType.Custom,
@@ -70,11 +71,6 @@ client.on('interactionCreate', async (interaction) => {
 
       await interaction.editReply(promptPreview + completedChat.choices[0].message.content + '\n🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥');
 
-      client.user.setActivity({
-        name: "Chilling ❄️❄️❄️",
-        type: ActivityType.Custom,
-      });
-
     }catch(err){
       if (err instanceof OpenAI.APIError) {
         console.error(err.status);  // e.g. 401
@@ -87,6 +83,33 @@ client.on('interactionCreate', async (interaction) => {
       }
     }
   }
+
+  if(interaction.commandName === 'stats'){
+    console.log(`Stats request from: ${interaction.member.displayName}`);
+    client.user.setActivity({
+      name: "Cooking 🔥🔥🔥",
+      type: ActivityType.Custom,
+    });
+
+    const game = interaction.options.get('game').value;
+    const platform = interaction.options.get('platform').value;
+    const username = interaction.options.get('username').value;
+
+    console.log(`Game: ${game}\nPlatform: ${platform}\nUsername: ${username}`);
+
+    const response = await fetch(`https://public-api.tracker.gg/v2/apex/standard/profile/${platform}/${username}`, {
+      headers:{
+        "TRN-Api-Key": process.env.TRACKER_KEY,
+      }  
+    })
+    const stats = await response.json();
+    console.log(stats);
+  }
+
+  client.user.setActivity({
+    name: "Chilling ❄️❄️❄️",
+    type: ActivityType.Custom,
+  });
 })
 
 client.login(process.env.DISCORD_TOKEN);

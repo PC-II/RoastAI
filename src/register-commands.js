@@ -34,6 +34,50 @@ const commands = [
       },
     ],
   },
+  {
+    name: 'stats',
+    description: "Get Apex stats of a player from Tracker.gg",
+    options: [
+      {
+        name: 'game',
+        description: "Choose a game",
+        type: ApplicationCommandOptionType.String,
+        choices: [
+          {
+            name: "Apex Legends",
+            value: 'apex',
+          },
+        ],
+        required: true,
+      },
+      {
+        name: 'platform',
+        description: "Choose a platform",
+        type: ApplicationCommandOptionType.String,
+        choices: [
+          {
+            name: "Steam (Origin Username)",
+            value: 'origin',
+          },
+          {
+            name: "Playstation",
+            value: 'psn',
+          },
+          {
+            name: "Xbox",
+            value: 'xbl',
+          },
+        ],
+        required: true,
+      },
+      {
+        name: 'username',
+        description: "Whos stats would you like to see?",
+        type: ApplicationCommandOptionType.String,
+        required: true,
+      }
+    ]
+  }
 ];
 
 const rest = new REST({version: 10}).setToken(process.env.DISCORD_TOKEN);
