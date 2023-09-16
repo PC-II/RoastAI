@@ -36,7 +36,51 @@ const commands = [
   },
   {
     name: 'stats',
-    description: "Get Apex stats of a player from Tracker.gg",
+    description: "Get Apex stats of a player from this server",
+    options: [
+      {
+        name: 'game',
+        description: "Choose a game",
+        type: ApplicationCommandOptionType.String,
+        choices: [
+          {
+            name: "Apex Legends",
+            value: 'apex',
+          },
+        ],
+        required: true,
+      },
+      {
+        name: 'platform',
+        description: "Choose a platform",
+        type: ApplicationCommandOptionType.String,
+        choices: [
+          {
+            name: "Steam (Origin Username)",
+            value: 'origin',
+          },
+          {
+            name: "Playstation",
+            value: 'psn',
+          },
+          {
+            name: "Xbox",
+            value: 'xbl',
+          },
+        ],
+        required: true,
+      },
+      {
+        name: 'target',
+        description: "Who do you want to get stats for?",
+        type: ApplicationCommandOptionType.Mentionable,
+        required: true,
+      }
+    ],
+  },
+  {
+    name: 'stats-search',
+    description: "Search Apex stats of a player from apex.tracker.gg",
     options: [
       {
         name: 'game',
@@ -72,8 +116,25 @@ const commands = [
       },
       {
         name: 'username',
-        description: "Whos stats would you like to see?",
+        description: "Who do you want to get stats for?",
         type: ApplicationCommandOptionType.String,
+        required: true,
+      },
+      {
+        name: 'mention',
+        description: "Who do you want the bot to @?",
+        type: ApplicationCommandOptionType.Mentionable,
+      },
+    ]
+  },
+  {
+    name: 'test',
+    description: "this is a test",
+    options: [
+      {
+        name: 'user',
+        description: "Pick someone",
+        type: ApplicationCommandOptionType.Mentionable,
         required: true,
       }
     ]
