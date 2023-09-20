@@ -121,13 +121,12 @@ client.on('interactionCreate', async (interaction) => {
     const stats = await response.json();
 
     if(stats.message && stats.message === "API rate limit exceeded"){
-      console.log(stats.message);
       await interaction.reply({
-        content: "No more stat requests available at this time!",
+        content: "No more requests available at this time!",
         ephemeral: true,
       });
+      console.log(stats.message);
       setChilling();
-      console.log(stats);
       return;
     }
 
@@ -217,7 +216,6 @@ client.on('interactionCreate', async (interaction) => {
         "Accept-Encoding": "gzip",
       }
     });
-
     const stats = await response.json();
 
     if(stats.errors){
@@ -231,13 +229,12 @@ client.on('interactionCreate', async (interaction) => {
     }
 
     if(stats.message && stats.message === "API rate limit exceeded"){
-      console.log(stats.message);
       await interaction.reply({
-        content: "No more stat requests available at this time!",
+        content: "No more requests available at this time!",
         ephemeral: true,
       });
+      console.log(stats.message);
       setChilling();
-      console.log(stats);
       return;
     }
 
@@ -311,6 +308,278 @@ client.on('interactionCreate', async (interaction) => {
     setChilling();
   }
 
+  if(interaction.commandName === 'session'){
+    console.log(`Session request from: ${interaction.member.displayName}`);
+    setRoasting();
+
+    const game = interaction.options.get('game').value;
+    const platform = interaction.options.get('platform').value;
+    const target = interaction.options.get('target').member;
+
+    /* Check for Database entry */
+    const entry = usernames.find(o => o.discordId === target.id);
+    if(!entry){
+      interaction.reply({content: `"${target.displayName}" is not stored in the database! You can look up your stats using /stats-search`, ephemeral: true});
+      console.log(`"${target.displayName}" is not stored in the database!`);
+      setChilling();
+      return;
+    }
+
+    /* Check if Requested Platform is valid */
+    let username = entry.platforms[platform];
+    if(!username){
+      interaction.reply({content: `"${target.displayName}" does not have a ${platform.toUpperCase()} account in the database! You can look up your stats using /session-search`, ephemeral: true});
+      console.log(`"${target.displayName}" does not have a ${platform.toUpperCase()} account in the database!`);
+      setChilling();
+      return;
+    }
+
+    console.log(`Game: ${game} | Platform: ${platform} | Username: ${username}`);
+
+    /* Player Sessions Endpoint */
+    const response = await fetch(`https://public-api.tracker.gg/v2/apex/standard/profile/${platform}/${username}/sessions`, {
+      headers: {
+        "TRN-Api-Key": process.env.TRACKER_KEY,
+        "Accept": "application/json",
+        "Accept-Encoding": "gzip",
+      }
+    });
+    const sessions = await response.json();
+
+    if(sessions.message && sessions.message === "API rate limit exceeded"){
+      await interaction.reply({
+        content: "No more requests available at this time!",
+        ephemeral: true,
+      });
+      console.log(sessions.message);
+      setChilling();
+      return;
+    }
+
+    const lastSession = sessions.data?.items.at(0);
+
+    let generalPlatform;
+    if(platform === "origin"){
+      generalPlatform = 'PC';
+    } else {
+      generalPlatform = 'console';
+    }
+
+    let startDate = lastSession.metadata.startDate.value;
+    startDate = timeConversion(startDate);
+    let duration = lastSession.metadata.duration.value;
+    duration = duration.substring(0, 8);
+    const nMatches = lastSession.matches.length;
+    const kills = lastSession.stats.kills?.displayValue;
+    const newRankScore = lastSession.stats.rankScore?.displayValue;
+    const newRankValue = lastSession.stats.rankScore?.value;
+    const newRankName = lastSession.stats.rankScore?.metadata.rankScoreInfo;
+    const gainedRankScore = lastSession.stats.rankScoreChange?.displayValue;
+    const gainedRankValue = lastSession.stats.rankScoreChange?.value;
+    const wins = lastSession.stats.wins?.displayValue;
+
+    let prompt = `Roast my friend about their most recent gaming session in ${game}. His username is ${username} and he plays on ${generalPlatform}. BE SURE to mention each of these stats of their's:
+    the game session was played on ${startDate},
+    the game session lasted for ${duration} minutes,
+    in that session they played ${nMatches} matches,`;
+    let statsPrompt = `\n\nSession Date: ${startDate} | Duration: ${duration} | Matches Played: ${nMatches}`;
+
+    if(kills){
+      prompt += `in that session they got ${kills} kills, `;
+      statsPrompt += ` | Kills: ${kills}`;
+    }
+    if(wins){
+      prompt += `in that session they got ${wins} wins, `;
+      statsPrompt += ` | Wins: ${wins}`;
+    }
+    if(gainedRankValue && newRankValue){
+      let prevRankScore = String(newRankValue - gainedRankValue);
+      if(Number(prevRankScore) > 999 && Number(prevRankScore) <= 9999) {
+        prevRankScore = prevRankScore.substring(0, 1) + ',' + prevRankScore.substring(1, prevRankScore.length);
+      } else if(Number(prevRankScore) > 9999) {
+        prevRankScore = prevRankScore.substring(0, 2) + ',' + prevRankScore.substring(2, prevRankScore.length);
+      }
+      statsPrompt += ` | Prev Rank: ${prevRankScore}`;
+    }
+    if(gainedRankScore){
+      if(gainedRankScore >= "0"){
+        prompt += `in that session they gained ${gainedRankScore} rank score, `;
+      }
+      else {
+        prompt += `in that session they lost ${gainedRankScore} rank score, `;
+      }
+      statsPrompt += ` | Rank Change: ${gainedRankScore}`;
+    }
+    if(newRankScore){
+      prompt += `their rank score after the session was ${newRankScore}`;
+      statsPrompt += ` | New Rank: ${newRankScore}`;
+      if(newRankName){
+        prompt += ` (${newRankName})`;
+        statsPrompt += ` (${newRankName})`;
+      }
+    }
+
+    await interaction.deferReply();
+    try{
+      const completedChat = await openai.chat.completions.create({
+        model: "gpt-3.5-turbo",
+        messages: [
+          {"role": "system", "content": `You are a sarcastic bot with EXTREMELY inappropriate and immature jokes. You have the dialect of an articulate, but slightly ghetto person. Be sure to sprinkle in a few slang insults relative to the prompt or make up one and use it. Also include a few exclamatories to emphasize the main roasting points when possible. THE REPLY MUST BE THREE PRAGRAPHS MAX USING LESS THAN 1800 CHARACTERS.`},
+          {"role": "user", "content": prompt},
+        ],
+      });
+      console.log(completedChat.choices[0].message.content); 
+
+      await interaction.editReply(completedChat.choices[0].message.content + statsPrompt);
+
+    }catch(err){
+      if (err instanceof OpenAI.APIError) {
+        console.error(err.status);  // e.g. 401
+        console.error(err.message); // e.g. The authentication token you passed was invalid...
+        console.error(err.code);  // e.g. 'invalid_api_key'
+        console.error(err.type);  // e.g. 'invalid_request_error'
+      } else {
+        // Non-API error
+        console.log(err);
+      }
+    }
+  }
+
+  if(interaction.commandName === 'session-search'){
+    console.log(`Session search request from: ${interaction.member.displayName}`);
+    setRoasting();
+
+    const game = interaction.options.get('game').value;
+    const platform = interaction.options.get('platform').value;
+    let username = interaction.options.get('username').value;
+    const mention = interaction.options.get('mention')?.member;
+
+    console.log(`Game: ${game} | Platform: ${platform} | Username: ${username}`);
+
+    /* Player Sessions Endpoint */
+    const response = await fetch(`https://public-api.tracker.gg/v2/apex/standard/profile/${platform}/${username}/sessions`, {
+      headers: {
+        "TRN-Api-Key": process.env.TRACKER_KEY,
+        "Accept": "application/json",
+        "Accept-Encoding": "gzip",
+      }
+    });
+    const sessions = await response.json();
+
+    if(sessions.errors){
+      await interaction.reply({
+        content: `Could not find the player "${username}" on ${platform.toUpperCase()}. If you're trying to see someone's previous session from this discord, use /session`,
+        ephemeral: true,
+      });
+      setChilling();
+      console.log(`Could not find the player "${username}" on ${platform.toUpperCase()}.`);
+      return;
+    }
+
+    if(sessions.message && sessions.message === "API rate limit exceeded"){
+      await interaction.reply({
+        content: "No more requests available at this time!",
+        ephemeral: true,
+      });
+      console.log(sessions.message);
+      setChilling();
+      return;
+    }
+
+    const lastSession = sessions.data?.items.at(0);
+
+    let generalPlatform;
+    if(platform === "origin"){
+      generalPlatform = 'PC';
+    } else {
+      generalPlatform = 'console';
+    }
+
+    let startDate = lastSession.metadata.startDate.value;
+    startDate = timeConversion(startDate);
+    let duration = lastSession.metadata.duration.value;
+    duration = duration.substring(0, 8);
+    const nMatches = lastSession.matches.length;
+    const kills = lastSession.stats.kills?.displayValue;
+    const newRankScore = lastSession.stats.rankScore?.displayValue;
+    const newRankValue = lastSession.stats.rankScore?.value;
+    const newRankName = lastSession.stats.rankScore?.metadata.rankScoreInfo;
+    const gainedRankScore = lastSession.stats.rankScoreChange?.displayValue;
+    const gainedRankValue = lastSession.stats.rankScoreChange?.value;
+    const wins = lastSession.stats.wins?.displayValue;
+
+    let prompt = `Roast my friend about their most recent gaming session in ${game}. His username is ${username} and he plays on ${generalPlatform}. BE SURE to mention each of these stats of their's:
+    the game session was played on ${startDate},
+    the game session lasted for ${duration} minutes,
+    in that session they played ${nMatches} matches,`;
+    let statsPrompt = `\n\nSession Date: ${startDate} | Duration: ${duration} | Matches Played: ${nMatches}`;
+
+    if(kills){
+      prompt += `in that session they got ${kills} kills, `;
+      statsPrompt += ` | Kills: ${kills}`;
+    }
+    if(wins){
+      prompt += `in that session they got ${wins} wins, `;
+      statsPrompt += ` | Wins: ${wins}`;
+    }
+    if(gainedRankValue && newRankValue){
+      let prevRankScore = String(newRankValue - gainedRankValue);
+      if(Number(prevRankScore) > 999 && Number(prevRankScore) <= 9999) {
+        prevRankScore = prevRankScore.substring(0, 1) + ',' + prevRankScore.substring(1, prevRankScore.length);
+      } else if(Number(prevRankScore) > 9999) {
+        prevRankScore = prevRankScore.substring(0, 2) + ',' + prevRankScore.substring(2, prevRankScore.length);
+      }
+      statsPrompt += ` | Prev Rank: ${prevRankScore}`;
+    }
+    if(gainedRankScore){
+      if(gainedRankScore >= "0"){
+        prompt += `in that session they gained ${gainedRankScore} rank score, `;
+      }
+      else {
+        prompt += `in that session they lost ${gainedRankScore} rank score, `;
+      }
+      statsPrompt += ` | Rank Change: ${gainedRankScore}`;
+    }
+    if(newRankScore){
+      prompt += `their rank score after the session was ${newRankScore}`;
+      statsPrompt += ` | New Rank: ${newRankScore}`;
+      if(newRankName){
+        prompt += ` (${newRankName})`;
+        statsPrompt += ` (${newRankName})`;
+      }
+    }
+    if(mention){
+      statsPrompt += `\n${mention}`;
+    }
+
+    await interaction.deferReply();
+    try{
+      const completedChat = await openai.chat.completions.create({
+        model: "gpt-3.5-turbo",
+        messages: [
+          {"role": "system", "content": `You are a sarcastic bot with EXTREMELY inappropriate and immature jokes. You have the dialect of an articulate, but slightly ghetto person. Be sure to sprinkle in a few slang insults relative to the prompt or make up one and use it. Also include a few exclamatories to emphasize the main roasting points when possible. THE REPLY MUST BE THREE PRAGRAPHS MAX USING LESS THAN 1800 CHARACTERS.`},
+          {"role": "user", "content": prompt},
+        ],
+      });
+      console.log(completedChat.choices[0].message.content); 
+
+      await interaction.editReply(completedChat.choices[0].message.content + statsPrompt);
+
+    }catch(err){
+      if (err instanceof OpenAI.APIError) {
+        console.error(err.status);  // e.g. 401
+        console.error(err.message); // e.g. The authentication token you passed was invalid...
+        console.error(err.code);  // e.g. 'invalid_api_key'
+        console.error(err.type);  // e.g. 'invalid_request_error'
+      } else {
+        // Non-API error
+        console.log(err);
+      }
+    }
+  }
+
+
+
   setChilling();
 })
 
@@ -339,163 +608,11 @@ const setRoasting = () => {
     type: ActivityType.Custom,
   });
 }
+const timeConversion = (time) => {
+  const utcDate = new Date(time);
+  let pstDate = utcDate.toLocaleString('en-US', { timeZone: 'America/Los_Angeles' });
+  pstDate = pstDate.substring(0, pstDate.length - 6) + pstDate.substring(pstDate.length - 3, pstDate.length);
+  return pstDate;  
+}
 
 client.login(process.env.DISCORD_TOKEN);
-
-/*
-{
-  metadata: {
-    startDate: {
-      value: '2023-09-15T09:54:50.02382Z',
-      displayValue: '2023-09-15T09:54:50.0238200Z'
-    },
-    endDate: {
-      value: '2023-09-15T10:13:58.795628Z',
-      displayValue: '2023-09-15T10:13:58.7956280Z'
-    },
-    duration: { value: '00:19:08.7718080', displayValue: '00:19:08.7718080' },
-    isActive: { value: true, displayValue: 'True' }
-  },
-  matches: [
-    {
-      id: 'd3125f29-119e-4fd1-b838-a3d25efcf9b6',
-      metadata: [Object],
-      ==== Metadata Example ====
-      {
-        result: { value: 'unknown', displayValue: 'Unknown' },
-        endDate: {
-          value: '2023-09-13T20:55:08.944426Z',
-          displayValue: '2023-09-13T20:55:08.9444260Z'
-        },
-        character: { value: 17, displayValue: 'Valkyrie' },
-        characterIconUrl: {
-          value: 'https://trackercdn.com/cdn/apex.tracker.gg/legends/valkyrie-tile.png',
-          displayValue: 'Valkyrie'
-        },
-        characterStats: { value: [], displayValue: '' },
-        legend: { value: 17, displayValue: 'Valkyrie' },
-        legendBigImageUrl: {
-          value: 'https://trackercdn.com/cdn/apex.tracker.gg/legends/valkyrie-tile.png',
-          displayValue: 'Valkyrie'
-        },
-        legendPortraitImageUrl: {
-          value: 'https://trackercdn.com/cdn/apex.tracker.gg/legends/portraits/valkyrie.png',
-          displayValue: 'https://trackercdn.com/cdn/apex.tracker.gg/legends/portraits/valkyrie.png'        
-        },
-        legendColor: { value: '#8260A8', displayValue: '#8260A8' },
-        legendStats: { value: [], displayValue: '' }
-      }
-      stats: [Object]     // These stats is the exact same as the stats below
-    },
-    {
-      id: '561235d1-61f9-4479-9188-4ff08188ab62',
-      metadata: [Object],
-      stats: [Object]
-    },
-    {
-      id: '7bdb253a-a41a-4e77-a4da-f92d925d5406',
-      metadata: [Object],
-      stats: [Object]
-    }
-  ],
-  stats: {
-    kills: {
-      rank: null,
-      percentile: null,
-      displayName: 'Kills',
-      displayCategory: 'Combat',
-      category: 'combat',
-      description: null,
-      metadata: {},
-      value: 9,
-      displayValue: '9',
-      displayType: 'Number'
-    },
-    rankScore: {
-      rank: null,
-      percentile: null,
-      displayName: 'Rank Score',
-      displayCategory: 'Game',
-      category: 'game',
-      description: null,
-      metadata: {},
-      value: 33225,
-      displayValue: '33,225',
-      displayType: 'Number'
-    },
-    rankScoreChange: {
-      rank: null,
-      percentile: null,
-      displayName: 'Rank Score Change',
-      displayCategory: 'Game',
-      category: 'game',
-      description: null,
-      metadata: {},
-      value: 0,
-      displayValue: '0',
-      displayType: 'Number'
-    },
-    arenaRankScore: {
-      rank: null,
-      percentile: null,
-      displayName: 'Arena Rank Score',
-      displayCategory: 'Game',
-      category: 'game',
-      description: null,
-      metadata: {},
-      value: 4800,
-      displayValue: '4,800',
-      displayType: 'Number'
-    },
-    wins: {
-      rank: null,
-      percentile: null,
-      displayName: 'Wins',
-      displayCategory: 'Game',
-      category: 'game',
-      description: null,
-      metadata: {},
-      value: 0,
-      displayValue: '0',
-      displayType: 'Number'
-    },
-    damage: {
-      rank: null,
-      percentile: null,
-      displayName: 'Damage',
-      displayCategory: 'Combat',
-      category: 'combat',
-      description: null,
-      metadata: {},
-      value: 4117,
-      displayValue: '4,117',
-      displayType: 'Number'
-    },
-    revives: {
-      rank: null,
-      percentile: null,
-      displayName: 'Revives',
-      displayCategory: 'Game',
-      category: 'game',
-      description: null,
-      metadata: {},
-      value: 0,
-      displayValue: '0',
-      displayType: 'Number'
-    },
-    smgKills: {
-      rank: null,
-      percentile: null,
-      displayName: 'SMG Kills',
-      displayCategory: 'Weapons',
-      category: 'weapons',
-      description: null,
-      metadata: {},
-      value: 0,
-      displayValue: '0',
-      displayType: 'Number'
-    }
-  },
-  playlists: []
-}
-*/

@@ -36,7 +36,7 @@ const commands = [
   },
   {
     name: 'stats',
-    description: "Get Apex stats of a player from this server",
+    description: "Get game stats of a player from this server",
     options: [
       {
         name: 'game',
@@ -80,7 +80,7 @@ const commands = [
   },
   {
     name: 'stats-search',
-    description: "Search Apex stats of a player from apex.tracker.gg",
+    description: "Search game stats of a player from tracker.gg",
     options: [
       {
         name: 'game',
@@ -128,17 +128,98 @@ const commands = [
     ]
   },
   {
-    name: 'test',
-    description: "this is a test",
+    name: 'session',
+    description: "Get the last session of games of a player from this server",
     options: [
       {
-        name: 'user',
-        description: "Pick someone",
+        name: 'game',
+        description: "Choose a game",
+        type: ApplicationCommandOptionType.String,
+        choices: [
+          {
+            name: "Apex Legends",
+            value: 'apex',
+          },
+        ],
+        required: true,
+      },
+      {
+        name: 'platform',
+        description: "Choose a platform",
+        type: ApplicationCommandOptionType.String,
+        choices: [
+          {
+            name: "Steam (Origin Username)",
+            value: 'origin',
+          },
+          {
+            name: "Playstation",
+            value: 'psn',
+          },
+          {
+            name: "Xbox",
+            value: 'xbl',
+          },
+        ],
+        required: true,
+      },
+      {
+        name: 'target',
+        description: "Who do you want to get stats for?",
         type: ApplicationCommandOptionType.Mentionable,
         required: true,
       }
+    ],
+  },
+  {
+    name: 'session-search',
+    description: "Search game stats of a player from tracker.gg",
+    options: [
+      {
+        name: 'game',
+        description: "Choose a game",
+        type: ApplicationCommandOptionType.String,
+        choices: [
+          {
+            name: "Apex Legends",
+            value: 'apex',
+          },
+        ],
+        required: true,
+      },
+      {
+        name: 'platform',
+        description: "Choose a platform",
+        type: ApplicationCommandOptionType.String,
+        choices: [
+          {
+            name: "Steam (Origin Username)",
+            value: 'origin',
+          },
+          {
+            name: "Playstation",
+            value: 'psn',
+          },
+          {
+            name: "Xbox",
+            value: 'xbl',
+          },
+        ],
+        required: true,
+      },
+      {
+        name: 'username',
+        description: "Who do you want to get stats for?",
+        type: ApplicationCommandOptionType.String,
+        required: true,
+      },
+      {
+        name: 'mention',
+        description: "Who do you want the bot to @?",
+        type: ApplicationCommandOptionType.Mentionable,
+      },
     ]
-  }
+  },
 ];
 
 const rest = new REST({version: 10}).setToken(process.env.DISCORD_TOKEN);
