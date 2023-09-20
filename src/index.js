@@ -93,7 +93,7 @@ client.on('interactionCreate', async (interaction) => {
     /* Check for Database entry */
     const entry = usernames.find(o => o.discordId === target.id);
     if(!entry){
-      interaction.reply({content: `"${target.displayName}" is not stored in the database! You can look up your stats using /stats-search`, ephemeral: true});
+      interaction.reply({content: `"${target.displayName}" is not stored in the database! You can look up any player's stats using /stats-search`, ephemeral: true});
       console.log(`"${target.displayName}" is not stored in the database!`);
       setChilling();
       return;
@@ -102,7 +102,7 @@ client.on('interactionCreate', async (interaction) => {
     /* Check if Requested Platform is valid */
     let username = entry.platforms[platform];
     if(!username){
-      interaction.reply({content: `"${target.displayName}" does not have a ${platform.toUpperCase()} account in the database! You can look up your stats using /stats-search`, ephemeral: true});
+      interaction.reply({content: `"${target.displayName}" does not have a ${platform.toUpperCase()} account in the database! You can look up any player's stats using /stats-search`, ephemeral: true});
       console.log(`"${target.displayName}" does not have a ${platform.toUpperCase()} account in the database!`);
       setChilling();
       return;
@@ -220,7 +220,7 @@ client.on('interactionCreate', async (interaction) => {
 
     if(stats.errors){
       await interaction.reply({
-        content: `Could not find the player "${username}" on ${platform.toUpperCase()}. If you're trying to see someone's stats from this discord, use /stats`,
+        content: `Could not find the player "${username}" on ${platform.toUpperCase()}. If you're trying to see someone's stats from this discord use /stats`,
         ephemeral: true,
       });
       setChilling();
@@ -319,7 +319,7 @@ client.on('interactionCreate', async (interaction) => {
     /* Check for Database entry */
     const entry = usernames.find(o => o.discordId === target.id);
     if(!entry){
-      interaction.reply({content: `"${target.displayName}" is not stored in the database! You can look up your stats using /stats-search`, ephemeral: true});
+      interaction.reply({content: `"${target.displayName}" is not stored in the database! You can look up anyone's most recent session using /session-search`, ephemeral: true});
       console.log(`"${target.displayName}" is not stored in the database!`);
       setChilling();
       return;
@@ -328,7 +328,7 @@ client.on('interactionCreate', async (interaction) => {
     /* Check if Requested Platform is valid */
     let username = entry.platforms[platform];
     if(!username){
-      interaction.reply({content: `"${target.displayName}" does not have a ${platform.toUpperCase()} account in the database! You can look up your stats using /session-search`, ephemeral: true});
+      interaction.reply({content: `"${target.displayName}" does not have a ${platform.toUpperCase()} account in the database! You can look up anyone's most recent session using /session-search`, ephemeral: true});
       console.log(`"${target.displayName}" does not have a ${platform.toUpperCase()} account in the database!`);
       setChilling();
       return;
@@ -468,7 +468,7 @@ client.on('interactionCreate', async (interaction) => {
 
     if(sessions.errors){
       await interaction.reply({
-        content: `Could not find the player "${username}" on ${platform.toUpperCase()}. If you're trying to see someone's previous session from this discord, use /session`,
+        content: `Could not find the player "${username}" on ${platform.toUpperCase()}. If you're trying to see someone's most recent session from this discord, use /session`,
         ephemeral: true,
       });
       setChilling();
